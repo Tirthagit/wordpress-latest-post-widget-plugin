@@ -1,0 +1,18 @@
+{
+    "name": "truetirtha/latest-posts-widget",
+    "description": "This is a simple WordPress plugin.",
+    "type": "project",
+    "license": "GPL v2 or later",
+    "autoload": {
+        "psr-4": {
+            "LatestPostWidget\\Includes\\": "includes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Truetirtha",
+            "email": "patitirtharaj@gmail.com"
+        }
+    ],
+    "require": {}
+}
