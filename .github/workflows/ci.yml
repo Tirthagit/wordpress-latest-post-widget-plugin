@@ -96,6 +96,10 @@ jobs:
       # Step 1: Check out the repository code.
       - name: Checkout code
         uses: actions/checkout@v4
+        
+        # Install Subversion 
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
 
       # Step 2: Set up the WordPress test environment using a dedicated Action.
       # This action downloads WordPress, the unit test library, and sets up a test database.
