@@ -16,7 +16,8 @@
   ],
   "require-dev": {
     "squizlabs/php_codesniffer": "*",
-    "wp-coding-standards/wpcs": "*"
+    "wp-coding-standards/wpcs": "*",
+    "phpunit/phpunit": "^12.3"
   },
   "config": {
     "allow-plugins": {
