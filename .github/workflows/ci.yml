@@ -96,8 +96,8 @@ jobs:
       # Step 1: Check out the repository code.
       - name: Checkout code
         uses: actions/checkout@v4
-        
-        # Install Subversion 
+
+        # Install Subversion
       - name: Install SVN
         run: sudo apt-get update && sudo apt-get install -y subversion
 
@@ -108,9 +108,11 @@ jobs:
       - name: Set up WordPress and Test Library
         uses: sjinks/setup-wordpress-test-library@v2.1.4
         with:
-          #   wordpress-version: ${{ matrix.wordpress-version }}
-          #   php-version: ${{ matrix.php-version }}
-          version: "8.3"
+          # wordpress-version: ${{ matrix.wordpress-version }}
+          php-version: ${{ matrix.php-version }}
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction --dev
 
       # Step 3: Install PHPUnit and run the actual tests.
       # This command is typically defined in your `composer.json` or `package.json`.
