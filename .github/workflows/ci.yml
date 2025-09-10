@@ -118,7 +118,7 @@ jobs:
       # This command is typically defined in your `composer.json` or `package.json`.
       # It executes the PHPUnit test suite.
       - name: Run tests with PHPUnit with coverage report
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit 
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
