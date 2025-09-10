@@ -28,7 +28,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1" # Change to your plugin's minimum required PHP version.
+          php-version: "8.3" # Change to your plugin's minimum required PHP version.
           extensions: mbstring, xml, ctype, iconv, intl, json
           tools: composer
 
