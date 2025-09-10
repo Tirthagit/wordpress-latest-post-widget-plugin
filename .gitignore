@@ -1,1 +1,8 @@
 vendor
+.idea
+.vscode
+.vs
+assets/*
+includes/admin/FormHandler.php
+includes/view/*
+TODO
