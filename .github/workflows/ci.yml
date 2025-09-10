@@ -112,9 +112,12 @@ jobs:
           #   php-version: ${{ matrix.php-version }}
           version: latest
 
-      # Step 3: Run the actual tests.
+      # Step 3: Install PHPUnit and run the actual tests.
       # This command is typically defined in your `composer.json` or `package.json`.
       # It executes the PHPUnit test suite.
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-interaction
+        
       - name: Run tests with PHPUnit with coverage report
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
 
