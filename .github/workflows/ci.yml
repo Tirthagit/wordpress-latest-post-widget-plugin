@@ -132,13 +132,18 @@ jobs:
 
       # Step 2: Install front-end dependencies and build assets (if you have them).
       # Skip this if you don't use npm for CSS/JS builds.
-      - name: Install npm dependencies and build assets
-        uses: |
-          npm install
-          npm run build
+      # Step 2a: Cache npm
+      - name: Cache npm
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+        # Step 2b: Install npm dependencies and build assets
+      - name: Install npm dependencies and build assets
+        run: |
+          npm install
+          npm run build
 
       # Step 3: Use a dedicated WordPress plugin build Action to create the .zip file.
       # This action is smart: it excludes development files like .git, node_modules, etc.
