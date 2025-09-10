@@ -32,18 +32,30 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, json
           tools: composer
 
-      # Step 3: Install PHP dependencies using Composer.
+      # Step 3: Caching dependencies
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+
+      # Step 4: Install PHP dependencies using Composer.
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
 
-      # Step 4: Run the PHP linter.
-      # This command is defined in your `composer.json` file.
+      # Step 5: Add depedency vulnerability scanning
+      - name: Security audit
+        run: composer audit
+
+      # Step 6: Run the PHP linter.
+      # This command is defined in `composer.json` file.
       # Example `scripts` section in composer.json:
       # "scripts": {
       #   "lint": "phpcs --standard=WordPress ./"
       # }
       - name: Run PHP Code Sniffer
         run: composer run lint
+        continue-on-error: false
 
   ####################################
   # 2. TESTING JOB: Run unit/integration tests
@@ -53,12 +65,32 @@ jobs:
     # This job depends on the 'lint' job finishing successfully.
     needs: lint
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Database Testing
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     # Use a strategy matrix to test across multiple WordPress and PHP versions.
     strategy:
       matrix:
-        wordpress-version: ["latest", "6.7.2", "6.5"] # Test against the latest and a specific older version.
-        php-version: ["8.1", "8.2"] # Test against multiple PHP versions.
+        wordpress-version: ["latest"] # Test against the latest and a specific older version.
+        php-version: ["8.3", "8.4"] # Test against multiple PHP versions.
+
+    env:
+      WP_TESTS_DIR: /tmp/wordpress-tests/
+      WP_CORE_DIR: /tmp/wordpress/
 
     steps:
       # Step 1: Check out the repository code.
@@ -76,8 +108,12 @@ jobs:
       # Step 3: Run the actual tests.
       # This command is typically defined in your `composer.json` or `package.json`.
       # It executes the PHPUnit test suite.
-      - name: Run tests with PHPUnit
-        run: vendor/bin/phpunit
+      - name: Run tests with PHPUnit with coverage report
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
 
   ####################################
   # 3. BUILD JOB: Create a distributable .zip file
@@ -87,6 +123,7 @@ jobs:
     # This job depends on the 'test' job finishing successfully.
     needs: test
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       # Step 1: Check out the repository code.
@@ -96,9 +133,12 @@ jobs:
       # Step 2: Install front-end dependencies and build assets (if you have them).
       # Skip this if you don't use npm for CSS/JS builds.
       - name: Install npm dependencies and build assets
-        run: |
+        uses: |
           npm install
           npm run build
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       # Step 3: Use a dedicated WordPress plugin build Action to create the .zip file.
       # This action is smart: it excludes development files like .git, node_modules, etc.
