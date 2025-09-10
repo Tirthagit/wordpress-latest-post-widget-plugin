@@ -1,0 +1,117 @@
+# Name of the GitHub Actions workflow.
+name: Build & Test WordPress Plugin
+
+# Controls when the action will run.
+# It runs on pushes to the 'main' branch and on any pull request.
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel.
+jobs:
+  #################################
+  # 1. LINTING JOB: Check code quality
+  #################################
+  lint:
+    name: "PHP Linting"
+    # The type of runner that the job will run on.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code so the workflow can access it.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up PHP. We specify a version to ensure consistency.
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1" # Change to your plugin's minimum required PHP version.
+          extensions: mbstring, xml, ctype, iconv, intl, json
+          tools: composer
+
+      # Step 3: Install PHP dependencies using Composer.
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      # Step 4: Run the PHP linter.
+      # This command is defined in your `composer.json` file.
+      # Example `scripts` section in composer.json:
+      # "scripts": {
+      #   "lint": "phpcs --standard=WordPress ./"
+      # }
+      - name: Run PHP Code Sniffer
+        run: composer run lint
+
+  ####################################
+  # 2. TESTING JOB: Run unit/integration tests
+  ####################################
+  test:
+    name: "Unit & Integration Tests"
+    # This job depends on the 'lint' job finishing successfully.
+    needs: lint
+    runs-on: ubuntu-latest
+
+    # Use a strategy matrix to test across multiple WordPress and PHP versions.
+    strategy:
+      matrix:
+        wordpress-version: ["latest", "6.7.2", "6.5"] # Test against the latest and a specific older version.
+        php-version: ["8.1", "8.2"] # Test against multiple PHP versions.
+
+    steps:
+      # Step 1: Check out the repository code.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the WordPress test environment using a dedicated Action.
+      # This action downloads WordPress, the unit test library, and sets up a test database.
+      - name: Setup WordPress test environment
+        uses: wordpress/wordpress-test-action@v1
+        with:
+          wordpress-version: ${{ matrix.wordpress-version }}
+          php-version: ${{ matrix.php-version }}
+
+      # Step 3: Run the actual tests.
+      # This command is typically defined in your `composer.json` or `package.json`.
+      # It executes the PHPUnit test suite.
+      - name: Run tests with PHPUnit
+        run: vendor/bin/phpunit
+
+  ####################################
+  # 3. BUILD JOB: Create a distributable .zip file
+  ####################################
+  build:
+    name: "Create Installable ZIP"
+    # This job depends on the 'test' job finishing successfully.
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install front-end dependencies and build assets (if you have them).
+      # Skip this if you don't use npm for CSS/JS builds.
+      - name: Install npm dependencies and build assets
+        run: |
+          npm install
+          npm run build
+
+      # Step 3: Use a dedicated WordPress plugin build Action to create the .zip file.
+      # This action is smart: it excludes development files like .git, node_modules, etc.
+      - name: Create WordPress plugin ZIP
+        uses: wordpress-actions/zip@v1.0.1
+        with:
+          # The output file name for the zip file. The slug is your plugin's directory name.
+          zip-name: ${{ github.event.repository.name }}.zip
+
+      # Step 4: Upload the generated ZIP file as a build artifact.
+      # This makes the ZIP file available for download from the GitHub Actions run summary page.
+      - name: Upload ZIP as a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.repository.name }}
+          path: ${{ github.event.repository.name }}.zip
