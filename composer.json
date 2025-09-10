@@ -1,18 +1,29 @@
 {
-    "name": "truetirtha/latest-posts-widget",
-    "description": "This is a simple WordPress plugin.",
-    "type": "project",
-    "license": "GPL v2 or later",
-    "autoload": {
-        "psr-4": {
-            "LatestPostWidget\\Includes\\": "includes/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Truetirtha",
-            "email": "patitirtharaj@gmail.com"
-        }
-    ],
-    "require": {}
+  "name": "truetirtha/latest-posts-widget",
+  "description": "This is a simple WordPress plugin.",
+  "type": "project",
+  "license": "GPL v2 or later",
+  "autoload": {
+    "psr-4": {
+      "LatestPostWidget\\Includes\\": "includes/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Truetirtha",
+      "email": "patitirtharaj@gmail.com"
+    }
+  ],
+  "require-dev": {
+    "squizlabs/php_codesniffer": "*",
+    "wp-coding-standards/wpcs": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "lint": "phpcs --standard=WordPress ./"
+  }
 }
