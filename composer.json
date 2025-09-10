@@ -24,6 +24,6 @@
     }
   },
   "scripts": {
-    "lint": "phpcs --standard=WordPress ./"
+    "lint": "phpcs --standard=WordPress --ignore=vendor/*,node_modules/* ./"
   }
 }
