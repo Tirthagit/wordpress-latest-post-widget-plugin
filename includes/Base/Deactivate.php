@@ -1,15 +1,14 @@
 <?php
 /**
  * 
- *@package Paktolus Post Widget
+ *@package Latest Post Widget
  */
-namespace PaktolusPostWidget\Includes\Base;
+namespace LatestPostWidget\Includes\Base;
 
 class Deactivate
 {
     public static function deactivate()
     {
-        
         flush_rewrite_rules();
     }
 }

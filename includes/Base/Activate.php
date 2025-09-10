@@ -1,9 +1,9 @@
 <?php
 /**
  * 
- *@package Paktolus Post Widget
+ *@package Latest Post Widget
  */
-namespace Includes\Base;
+namespace LatestPostWidget\Includes\Base;
 
 class Activate
 {
