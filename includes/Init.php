@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace PaktolusPostWidget\Includes;
+namespace LatestPostWidget\Includes;
 
-use PaktolusPostWidget\Includes\Api\PaktolusWidget;
+use LatestPostWidget\Includes\Api\LatestPostsWidget;
+use WP_Error;
 
 defined('ABSPATH') || exit;
 
@@ -17,11 +18,11 @@ class Init
 
     public function register_widget(): void
     {
-        if (!class_exists(PaktolusWidget::class)) {
+        if (!class_exists(LatestPostsWidget::class)) {
             error_log((new \WP_Error('widget_missing', 'Widget class not found'))->get_error_message());
             return;
         }
-        register_widget(PaktolusWidget::class);
+        register_widget(LatestPostsWidget::class);
     }
 
     private static function instantiate($classname)
@@ -31,6 +32,6 @@ class Init
 
     public static function register_services()
     {
-        return self::instantiate(Init::class);
+        return self::instantiate(self::class);
     }
 }
