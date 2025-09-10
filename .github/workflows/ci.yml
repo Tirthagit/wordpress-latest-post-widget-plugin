@@ -110,7 +110,7 @@ jobs:
         with:
           #   wordpress-version: ${{ matrix.wordpress-version }}
           #   php-version: ${{ matrix.php-version }}
-          version: latest
+          version: "8.3"
 
       # Step 3: Install PHPUnit and run the actual tests.
       # This command is typically defined in your `composer.json` or `package.json`.
