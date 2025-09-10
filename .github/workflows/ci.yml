@@ -157,7 +157,7 @@ jobs:
       # Step 3: Use a dedicated WordPress plugin build Action to create the .zip file.
       # This action is smart: it excludes development files like .git, node_modules, etc.
       - name: Create WordPress plugin ZIP
-        uses: wordpress-actions/zip@v1.0.1
+        uses: 10up/actions-wordpress@stable
         with:
           # The output file name for the zip file. The slug is your plugin's directory name.
           zip-name: ${{ github.event.repository.name }}.zip
