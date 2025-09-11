@@ -21,43 +21,68 @@
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Update URI:        https://example.com/my-plugin/
  */
+
 declare(strict_types=1);
 
-use \PaktolusPostWidgets\Includes\Init as Init;
-use PaktolusPostWidget\Includes\Base as Base;
-
-require_once plugin_dir_path(__FILE__) . '/includes/Init.php';
-require_once plugin_dir_path(__FILE__) . '/includes/api/PaktolusWidget.php';
-
+// define('THEME_VERSION', '1.0.0');
 
 defined('ABSPATH') || die("You don't have access to this file");
 
-if (file_exists(dirname(__FILE__) . "/vendor/autoload.php")) {
+if (file_exists(__DIR__ . "/vendor/autoload.php")) {
     require_once __DIR__ . "/vendor/autoload.php";
 }
 
+use LatestPostWidget\Includes\Admin\LPWAdminMenu as AdminMenu;
+use \LatestPostWidget\Includes\Init as Init;
+use \LatestPostWidget\Includes\Base\Activate as Activate;
+use \LatestPostWidget\Includes\Base\Deactivate as Deactivate;
+
 // Activate Plugin
 
-if (!function_exists(sanitize_text_field('activate_paktolus_plugin'))) {
-    function activate_paktolus_plugin()
+if (!function_exists(('lpw_activate'))) {
+    function lpw_activate()
     {
-        \PaktolusPostWidget\Includes\Base\Activate::activate();
+        Activate::activate();
     }
 }
-register_activation_hook(__FILE__, 'activate_paktolus_plugin');
+register_activation_hook(__FILE__, 'lpw_activate');
 
 
 // Deactivate Plugin
-if (!function_exists(sanitize_text_field('deactivate_paktolus_plugin'))) {
-    function deactivate_paktolus_plugin()
+if (!function_exists(('lpw_deactivate'))) {
+    function lpw_deactivate()
     {
-        \PaktolusPostWidget\Includes\Base\Deactivate::deactivate();
+        Deactivate::deactivate();
     }
 }
-register_deactivation_hook(__FILE__, 'deactivate_paktolus_plugin');
+register_deactivation_hook(__FILE__, 'lpw_deactivate');
 
 
 if (class_exists("LatestPostWidget\\Includes\\Init")) {
     Init::register_services();
 }
+
+if (class_exists("LatestPostWidget\\Includes\\Admin\\LPWAdminMenu")) {
+    new AdminMenu();
+}
+
+
+if (!function_exists('load_admin_stylesheet')) {
+    function load_admin_stylesheet()
+    {
+        wp_enqueue_style('latestpostwidgetadminstyle', plugin_dir_url(__FILE__) . '/assets/css/style.css', [], '1.0.0');
+    }
+}
+add_action('admin_enqueue_scripts', 'load_admin_stylesheet');
+
+if (!function_exists('load_admin_javascript')) {
+    function load_admin_javascript()
+    {
+        wp_enqueue_script('latestpostwidgetadminscript', plugin_dir_url(__FILE__) . '/assets/js/script.js', array('jquery'), '1.0.0');
+    }
+}
+
+add_action('admin_enqueue_scripts', 'load_admin_javascript');
+
+
 
