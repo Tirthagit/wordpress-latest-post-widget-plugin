@@ -118,7 +118,7 @@ jobs:
       # This command is typically defined in your `composer.json` or `package.json`.
       # It executes the PHPUnit test suite.
       - name: Run tests with PHPUnit with coverage report
-        run: vendor/bin/phpunit 
+        run: vendor/bin/phpunit
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -157,10 +157,13 @@ jobs:
       # Step 3: Use a dedicated WordPress plugin build Action to create the .zip file.
       # This action is smart: it excludes development files like .git, node_modules, etc.
       - name: Create WordPress plugin ZIP
-        uses: 10up/actions-wordpress@stable
-        with:
-          # The output file name for the zip file. The slug is your plugin's directory name.
-          zip-name: ${{ github.event.repository.name }}.zip
+        # uses: 10up/actions-wordpress@stable
+        # with:
+        #   # The output file name for the zip file. The slug is your plugin's directory name.
+        #   zip-name: ${{ github.event.repository.name }}.zip
+        run: |
+          composer install --no-dev --optimize-autoloader
+          zip -r latest-post-widget.zip . -x '*.git*' 'node_modules/*' 'tests/*' 'phpunit.xml' '*.md'
 
       # Step 4: Upload the generated ZIP file as a build artifact.
       # This makes the ZIP file available for download from the GitHub Actions run summary page.
