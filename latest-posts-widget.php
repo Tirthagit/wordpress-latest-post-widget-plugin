@@ -9,7 +9,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Latest Posts Widget
- * Plugin URI:        https://example.com/plugin-name
+ * Plugin URI:        https://github.com/Tirthagit/wordpress-latest-post-widget-plugin/
  * Description:       This is a plugin to show latest posts in a widget format and also allows to categorising the posts. Simple and flexible.
  * Version:           1.0.0
  * Requires at least: 6.4.5
@@ -19,13 +19,14 @@
  * Text Domain:       latestpostswidget
  * License:           GPL v2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Update URI:        https://example.com/my-plugin/
+ * Update URI:        https://github.com/Tirthagit/wordpress-latest-post-widget-plugin/
  */
 
 declare(strict_types=1);
 
 // define('THEME_VERSION', '1.0.0');
 
+// Prevent direct access
 defined('ABSPATH') || die("You don't have access to this file");
 
 if (file_exists(__DIR__ . "/vendor/autoload.php")) {
